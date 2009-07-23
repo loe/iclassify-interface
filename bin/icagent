@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+#
+#  iClassify - A node classification service. 
+#  Copyright (C) 2007 HJK Solutions and Adam Jacob (<adam@hjksolutions.com>)
+# 
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License along
+#  with this program; if not, write to the Free Software Foundation, Inc.,
+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# icagent registers a node with iclassify, and lets you use small DSL for
+# classifiying them.
+
+require 'rubygems'
+require File.dirname(__FILE__) + '/../lib/iclassify'
+require 'optparse'
+
+config = {
+  :uuidfile => '/etc/icagent/icagent.uuid',
+  :directory => File.dirname(__FILE__) + '/../recipes'
+}
+
+opts = OptionParser.new do |opts|
+  opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
+  opts.on("-d DIRECTORY", "--directory DIRECTORY", "Path to icagent recipes") do |d|
+    config[:directory] = d 
+  end
+  opts.on("-r RECIPE", "--recipe RECIPE", "Path to a single icagent recipe") do |r|
+    config[:recipe] = r
+  end
+  opts.on("-u UUIDFILE", "--uuidfile UUIDFILE", "Path to the uuid file") do |u|
+    config[:uuidfile] = u
+  end
+  opts.on("-s SERVER", "--server", "iClassify Server URL") do |s|
+    config[:server] = s
+  end
+  opts.on("-n", "--no-action", "Don't update anything, just print.") do |n|
+    config[:dryrun] = true
+  end
+  opts.on("-w WAIT", "--wait TIME", "Wait for up to TIME seconds.") do |w|
+    config[:wait] = w.to_i
+  end
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end
+opts.parse!(ARGV)
+
+unless config.has_key?(:recipe) || config.has_key?(:directory)
+  puts "You must specify either a recipe (-r) or a directory (-d)"
+  puts opts
+  exit
+end
+
+if config.has_key?(:wait)
+  splay = rand(config[:wait])
+  sleep(splay)
+end
+
+agent = IClassify::Agent.new(config[:uuidfile], config[:server])
+begin
+  agent.load
+rescue SocketError
+  $stderr.puts("Error: Cannot connect to server.")
+  exit 1
+end
+
+if config.has_key?(:recipe)
+  agent.run_script(File.expand_path(config[:recipe]))
+end
+if config.has_key?(:directory)
+  Dir.glob(File.join(File.expand_path(config[:directory]), '*.rb')).sort.each do |file|
+    if File.file?(file)
+      agent.run_script(file)
+    end
+  end
+end
+if config.has_key?(:dryrun) && config[:dryrun]
+  puts agent.to_s
+else
+  agent.update
+end
