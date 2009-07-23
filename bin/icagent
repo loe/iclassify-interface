@@ -21,7 +21,7 @@
 # classifiying them.
 
 require 'rubygems'
-require File.dirname(__FILE__) + '/../lib/iclassify'
+require File.dirname(__FILE__) + '/../lib/iclassify-interface'
 require 'optparse'
 
 config = {
