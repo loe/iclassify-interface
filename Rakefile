@@ -9,7 +9,7 @@ begin
     gem.email = "andrew@andrewloe.com"
     gem.homepage = "http://github.com/loe/iclassify-interface"
     gem.authors = ["W. Andrew Loe III"]
-    gem.add_dependency("uuidtools", '1.0.7')
+    gem.add_dependency("uuidtools", '>= 2.0.0')
     gem.add_dependency("rake", ">= 0.8.3")
     gem.add_dependency("launchy")
     gem.add_dependency("builder")

@@ -23,7 +23,7 @@ module IClassify
           write_uuidfile(uuidfile)
         end
       else
-        @uuid = UUID.random_create
+        @uuid = UUIDTools::UUID.random_create
         @password = random_password(30)
         write_uuidfile(uuidfile)
       end
