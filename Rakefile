@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "iclassify-interface"
-    gem.summary = %Q{TODO}
+    gem.summary = %Q{Module for interfacing with iclassify.}
     gem.email = "andrew@andrewloe.com"
     gem.homepage = "http://github.com/loe/iclassify-interface"
     gem.authors = ["W. Andrew Loe III"]
