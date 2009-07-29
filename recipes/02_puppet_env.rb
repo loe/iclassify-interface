@@ -1,3 +1,3 @@
 unless attrib?("puppet_env")
-  replace_attrib("puppet_env", "development")
+  replace_attrib("puppet_env", "skunkworks")
 end

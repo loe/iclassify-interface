@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{iclassify-interface}
-  s.version = "1.0.11"
+  s.version = "1.0.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["W. Andrew Loe III"]
-  s.date = %q{2009-07-24}
+  s.date = %q{2009-07-29}
   s.email = %q{andrew@andrewloe.com}
   s.executables = ["icagent", "icsearch", "icwatcher"]
   s.extra_rdoc_files = [
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "recipes/01_default_class.rb",
      "recipes/02_ec2.rb",
      "recipes/02_mongrel_server.rb",
+     "recipes/02_puppet_env.rb",
      "recipes/03_mysql_server.rb"
   ]
   s.homepage = %q{http://github.com/loe/iclassify-interface}
