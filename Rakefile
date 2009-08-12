@@ -8,7 +8,7 @@ begin
     gem.summary = %Q{Module for interfacing with iclassify.}
     gem.email = "andrew@andrewloe.com"
     gem.homepage = "http://github.com/loe/iclassify-interface"
-    gem.authors = ["W. Andrew Loe III"]
+    gem.authors = ["Adam Jacob", "W. Andrew Loe III"]
     gem.add_dependency("uuidtools", '>= 2.0.0')
     gem.add_dependency("rake", ">= 0.8.3")
     gem.add_dependency("launchy")
@@ -53,7 +53,7 @@ Rake::RDocTask.new do |rdoc|
   end
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "icagent2 #{version}"
+  rdoc.title = "iclassify-interface #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

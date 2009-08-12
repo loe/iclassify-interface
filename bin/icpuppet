@@ -17,7 +17,7 @@
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# A very simple search utility for iclassify.
+#  Puppet node integration; turns an IClassify node into a puppet node.
 #
 
 require 'rubygems'
@@ -25,17 +25,12 @@ require File.dirname(__FILE__) + '/../lib/iclassify-interface'
 require 'optparse'
 require 'highline/import'
 
-config = {
-  :only => nil,
-  :quiet => nil
-}
+config = {}
+args = ARGV
 opts = OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} (options) query"
-  opts.on("-a one,two,three", "--attrib one,two,three", Array, "Attributes to print") do |a|
-    config[:attribs] = a 
-  end
-  opts.on("-t", "--tags", "Print tags or not, if attribs specified") do |t|
-    config[:tags] = t
+  opts.banner = "Usage: #{$0} [-s server] hostname"
+  opts.on("-s SERVER", "--server", "iClassify Server URL") do |s|
+    config[:server] = s
   end
   opts.on("-u user", "--user user", "User to authenticate with, defaults to USER env variable") do |u|
     config[:user] = u
@@ -43,25 +38,16 @@ opts = OptionParser.new do |opts|
   opts.on("-p passwd", "--passwd passwd", "Password to authenticate with") do |p|
     config[:passwd] = p
   end
-  opts.on("-s server", "--server server", "iClassify Server URL") do |s|
-    config[:server] = s
-  end
-  opts.on("-o", "--only", "Print only the attributes specified on the command line") do |o|
-    config[:only] = o
-  end
-  opts.on("-q", "--quiet", "Do not print the header") do |q|
-    config[:quiet] = q
-  end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
   end
 end
-args = ARGV
 opts.parse!(args)
 
-if args.length != 1
-  puts "You must specify a single query."
+unless args.length == 1
+  puts "You must supply a hostname or fqdn.  You supplied: "
+  puts args.join(" ")
   puts opts.help
   exit 1
 end
@@ -76,43 +62,29 @@ unless config[:user] && config[:passwd]
   exit 1
 end
 
-query = args[0]
+
+hostname = args[0]
 
 client = IClassify::Client.new(config[:server], config[:user], config[:passwd])
 begin
-  results = client.search(query, config[:attribs] ? config[:attribs] : [])
+  results = client.search("hostname:#{hostname} OR fqdn:#{hostname}")
 rescue SocketError
   $stderr.puts("Error: Could not connect to server.")
   exit 1
 end
 
-if config.has_key?(:attribs)
-  header = "# "
-  if config[:only]
-    header += "#{config[:attribs].join(',')}"
-  else
-    header += "description,uuid,#{config[:attribs].join(',')}"
-  end
-  header << ",tags" if config.has_key?(:tags)
-  puts header unless config[:quiet]
-  results.each do |node|
-    line = Array.new
-    line << "#{node.description}" unless config[:only]
-    line << "#{node.uuid}" unless config[:only]
-    config[:attribs].each do |attrib|
-      na = node.attribs.detect { |a| a[:name] == attrib }
-      if na
-        line << "#{na[:values].join(':')}"
-      else
-        line << ""
-      end
-    end
-    line << "\"#{node.tags.join(' ')}\"" if config.has_key?(:tags)
-    puts line.join(",")
-  end 
-else
-  results.each do |node|
-    puts "#\n# Node #{node.uuid}\n#"
-    puts node.to_s
+if results.length > 1
+  STDERR.puts "Hostname #{hostname} has more than one node definition!"
+  exit 10
+end
+# FIXME: This should go away when real support for parents/children shows up.
+base_node = client.search("description:\"Base node\"")
+if base_node.length == 1
+  base_node[0].tags.each do |tag|
+    results[0].tags << tag unless results[0].tags.detect { |t| t == tag }
   end
 end
+results.each do |node|
+  puts node.to_puppet
+end
+exit 0

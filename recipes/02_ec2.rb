@@ -1,27 +1,44 @@
 require 'net/http'
 
-ec2 = false
-domain = attrib?('domain')
-ec2 = true if domain =~ /(\.amazonaws.com|compute-1.internal)$/
-
-if ec2
-  replace_attrib("ec2", "true") 
-else
-  replace_attrib("ec2", "false")
-end
-
-def get_from_ec2(thing="/")
-  base_url = "http://169.254.169.254/latest/meta-data" + thing
+def get_from_ec2(key = '')
+  base_url = "http://instance-data.ec2.internal/latest/meta-data/" + key
   url = URI.parse(base_url)
   req = Net::HTTP::Get.new(url.path)
-  res = Net::HTTP.start(url.host, url.port) {|http|
+  res = Net::HTTP.start(url.host, url.port) do |http|
     http.request(req)
-  }
+  end
+  
   res.body
 end
 
-if ec2
-  get_from_ec2.split("\n").each do |key|
-    add_attrib("ec2-#{key}", get_from_ec2("/#{key}"))
+def get_keys(key = '')
+  keys = get_from_ec2(key).split("\n")
+  
+  keys.inject([]) do |accum, k|
+    if k =~ /\/$/
+      get_keys(key + k).each do |k|
+        accum << k
+      end
+      
+      accum
+    elsif k =~ /=/
+      get_keys(key + $` + '/').each do |k|
+        accum << k
+      end
+      
+      accum
+    else
+      accum << key + k
+      
+      accum
+    end
+  end
+end
+
+if attrib?('domain') =~ /(\.amazonaws.com|compute-1.internal|ec2.internal)$/
+  replace_attrib("ec2", "true")
+
+  get_keys.each do |key|
+    replace_attrib("ec2-#{key.gsub('/', '-')}", get_from_ec2("#{key}"))
   end
 end

@@ -2,13 +2,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{iclassify-interface}
-  s.version = "1.0.12"
+  s.version = "1.0.13"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["W. Andrew Loe III"]
-  s.date = %q{2009-07-29}
+  s.authors = ["Adam Jacob", "W. Andrew Loe III"]
+  s.date = %q{2009-08-12}
   s.email = %q{andrew@andrewloe.com}
-  s.executables = ["icagent", "icsearch", "icwatcher"]
+  s.executables = ["icagent", "icpuppet", "icsearch", "icwatcher"]
   s.extra_rdoc_files = [
     "README"
   ]
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "bin/icagent",
+     "bin/icpuppet",
      "bin/icsearch",
      "bin/icwatcher",
      "iclassify-interface.gemspec",
