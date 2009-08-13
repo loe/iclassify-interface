@@ -10,8 +10,7 @@ begin
     gem.homepage = "http://github.com/loe/iclassify-interface"
     gem.authors = ["Adam Jacob", "W. Andrew Loe III"]
     gem.add_dependency("uuidtools", '>= 2.0.0')
-    gem.add_dependency("rake", ">= 0.8.3")
-    gem.add_dependency("launchy")
+    gem.add_dependency("highline")
     gem.add_dependency("builder")
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
