@@ -1,4 +1,3 @@
-ENV['FACTERLIB'] = '/var/lib/puppet/lib/facter'
 require 'rubygems'
 require 'facter'
 
