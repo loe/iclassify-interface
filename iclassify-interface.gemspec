@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{iclassify-interface}
-  s.version = "1.0.15"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adam Jacob", "W. Andrew Loe III"]
-  s.date = %q{2009-08-13}
+  s.date = %q{2009-08-21}
   s.email = %q{andrew@andrewloe.com}
   s.executables = ["icagent", "icpuppet", "icsearch", "icwatcher"]
   s.extra_rdoc_files = [

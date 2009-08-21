@@ -39,6 +39,6 @@ if attrib?('domain') =~ /(\.amazonaws.com|compute-1.internal|ec2.internal)$/
   replace_attrib("ec2", "true")
 
   get_keys.each do |key|
-    replace_attrib("ec2-#{key.gsub('/', '-')}", get_from_ec2("#{key}"))
+    replace_attrib("ec2_#{key.gsub(/-|\//, '_')}", get_from_ec2("#{key}"))
   end
 end
